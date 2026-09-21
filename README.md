@@ -96,7 +96,7 @@ See [Formula, Query & Model Guide](docs/FORMULA_GUIDE.md), [Workbook Architectur
 
 The source-backed Streamlit dashboard is in `dashboard/`. Run `pip install -r requirements.txt` and then `streamlit run dashboard/app.py`. For Streamlit Community Cloud, set `dashboard/app.py` as the entry point. The checked-in `dashboard/data/projects.csv` is derived from the two annual NISTA workbooks; it needs no local Excel connection to render. To rebuild that snapshot from the original files, run `python dashboard/prepare_data.py GMPP_2024_25.xlsx GMPP_2025_26.xlsx`.
 
-Figures use full-width rows for long department and project labels, with consistent value placement and an explicit distinction between published delivery ratings and the independent analytical risk score. The dashboard includes reporting-year, department, and category filters, a project register, and data-quality checks.
+Figures use full-width rows for long department and project labels, with consistent value placement and an explicit distinction between published delivery ratings and the independent analytical risk score. The dashboard includes reporting-year, department, and category filters, a project register, and data-quality checks. The sidebar's Dark mode switch updates the page and charts together; the project register colours complete rows by the published RED, AMBER, or GREEN rating with contrasting text.
 
 - [`workbook/UK_GMPP_Risk_Dashboard_Portfolio.xlsx`](workbook/UK_GMPP_Risk_Dashboard_Portfolio.xlsx) - cached portfolio workbook
 - [`docs/UK_GMPP_Project_Summary.pdf`](docs/UK_GMPP_Project_Summary.pdf) - 3-page project summary
