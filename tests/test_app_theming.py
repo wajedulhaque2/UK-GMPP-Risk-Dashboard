@@ -25,8 +25,8 @@ class ThemeAndRatingTest(unittest.TestCase):
             for fill, foreground in (("#B91C1C", "#FFFFFF"), ("#E9A800", "#171717"),
                                      ("#087F3E", "#FFFFFF")):
                 self.assertIn(f"background-color: {fill}; color: {foreground}", styles)
-            self.assertIn("background-color: #203248; color: #F4F2EC" if dark else
-                          "background-color: #FFFEFA; color: #1A2F45", styles)
+            self.assertIn("background-color: #24292C; color: #FFFFFF" if dark else
+                          "background-color: #FFFFFF; color: #0B0C0C", styles)
 
 
 if __name__ == "__main__":

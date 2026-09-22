@@ -11,8 +11,7 @@ import streamlit as st
 
 
 ROOT = Path(__file__).resolve().parent
-NAVY = "#1A2F45"
-TEAL = "#986635"
+GOV_BLUE = "#1D70B8"
 RATING_COLORS = {"RED": "#B91C1C", "AMBER": "#E9A800", "GREEN": "#087F3E", "Unrated": "#9AA9B5"}
 ROW_COLORS = {"RED": ("#B91C1C", "#FFFFFF"), "AMBER": ("#E9A800", "#171717"),
               "GREEN": ("#087F3E", "#FFFFFF")}
@@ -26,8 +25,8 @@ def load() -> pd.DataFrame:
 def chart(fig: go.Figure, height: int = 420, bottom: int = 48) -> None:
     fig.update_layout(
         template="plotly_dark" if dark_mode else "plotly_white", height=height,
-        font={"family": "Aptos, Arial", "color": TEXT, "size": 12},
-        title={"x": 0.02, "xanchor": "left", "font": {"size": 18, "family": "Arial Narrow, Arial"}},
+        font={"family": "Arial, Helvetica, sans-serif", "color": TEXT, "size": 13},
+        title={"x": 0.02, "xanchor": "left", "font": {"size": 20, "family": "Arial, Helvetica, sans-serif"}},
         margin={"l": 24, "r": 56, "t": 65, "b": bottom},
         paper_bgcolor=SURFACE, plot_bgcolor=SURFACE, bargap=0.3,
         hoverlabel={"font": {"family": "Arial"}},
@@ -55,32 +54,35 @@ st.set_page_config(page_title="UK major projects | portfolio risk", page_icon="�
 st.sidebar.title("UK major projects")
 dark_mode = st.sidebar.toggle("Dark mode", value=False, key="dark_mode")
 BACKGROUND, SURFACE, TEXT, MUTED, BORDER, GRID, ACCENT = (
-    ("#111D2B", "#203248", "#F4F2EC", "#BDC7CF", "#43566A", "#35485A", "#D2A164")
+    ("#171A1C", "#24292C", "#FFFFFF", "#CED5D9", "#596269", "#434B50", "#8EB8DC")
     if dark_mode else
-    ("#F4F1E9", "#FFFEFA", "#1A2F45", "#566A79", "#DAD9D0", "#E8E6DF", TEAL)
+    ("#FFFFFF", "#FFFFFF", "#0B0C0C", "#484949", "#CECECE", "#E5E5E5", GOV_BLUE)
 )
 st.markdown(f"""
 <style>
-.stApp {{background:{BACKGROUND};color:{TEXT};font-family:Aptos,Arial,sans-serif;}}
-[data-testid="stSidebar"] {{background:{SURFACE};border-right:1px solid {BORDER};color:{TEXT};}}
+.stApp {{background:{BACKGROUND};color:{TEXT};font-family:Arial,Helvetica,sans-serif;border-top:9px solid {'#0B0C0C' if not dark_mode else '#000000'};}}
+.block-container {{max-width:1380px;padding-top:2rem;}}
+[data-testid="stSidebar"] {{background:{'#F3F3F3' if not dark_mode else '#24292C'};border-right:1px solid {BORDER};color:{TEXT};}}
 .stApp h1, .stApp h2, .stApp h3, .stApp p, .stApp label,
 [data-testid="stSidebar"] h1, [data-testid="stSidebar"] p, [data-testid="stSidebar"] label {{color:{TEXT};}}
 .stApp [data-testid="stCaptionContainer"] p, [data-testid="stSidebar"] [data-testid="stCaptionContainer"] p {{color:{MUTED};}}
-.stApp h1, .stApp h2, .stApp h3 {{font-family:'Arial Narrow',Arial,sans-serif;text-transform:uppercase;letter-spacing:.035em;}}
-[data-testid="stSidebar"] {{border-right:4px solid {ACCENT};}}
-[data-testid="stSidebar"] h1 {{font-family:'Arial Narrow',Arial,sans-serif;text-transform:uppercase;letter-spacing:.05em;}}
-[data-testid="stMetric"], [data-testid="stPlotlyChart"], [data-testid="stDataFrame"] {{background:{SURFACE};border:1px solid {BORDER};border-radius:9px;}}
-[data-testid="stMetric"] {{padding:0.85rem 1rem;min-height:115px;border-radius:3px;border-top:4px solid {ACCENT};}}
+.stApp h1, .stApp h2, .stApp h3 {{font-family:Arial,Helvetica,sans-serif;letter-spacing:-.025em;font-weight:700;}}
+.stApp h1 {{border-bottom:5px solid {ACCENT};padding-bottom:.55rem;}}
+[data-testid="stSidebar"] h1 {{font-size:1.55rem;border-bottom:4px solid {ACCENT};padding-bottom:.6rem;}}
+[data-testid="stMetric"], [data-testid="stPlotlyChart"], [data-testid="stDataFrame"] {{background:{SURFACE};border:0;border-bottom:1px solid {BORDER};border-radius:0;}}
+[data-testid="stMetric"] {{padding:1rem .65rem 1.1rem;min-height:115px;border-top:4px solid {ACCENT};}}
 [data-testid="stMetric"] label, [data-testid="stMetricValue"] {{color:{TEXT};}}
-[data-testid="stPlotlyChart"], [data-testid="stDataFrame"] {{padding:0.35rem;border-radius:3px;}}
+[data-testid="stPlotlyChart"], [data-testid="stDataFrame"] {{padding:.4rem 0 1rem;}}
 [data-testid="stHeader"] {{background:{BACKGROUND};}}
 [data-testid="stAlert"] {{color:{TEXT};}}
-.scope {{background:{'#2D3C4A' if dark_mode else '#EEE8DA'};border-left:5px solid {ACCENT};padding:0.75rem 1rem;margin:0.5rem 0 1.2rem;color:{TEXT};}}
+.scope {{background:{'#2C363E' if dark_mode else '#F4F8FB'};border-left:5px solid {ACCENT};padding:1rem 1.2rem;margin:.5rem 0 1.5rem;color:{TEXT};}}
 [data-baseweb="select"] > div, [data-testid="stSidebar"] [role="radiogroup"],
 [data-baseweb="input"] > div {{background:{SURFACE};color:{TEXT};border-color:{BORDER};}}
 [data-baseweb="select"] *, [data-baseweb="input"] input, [data-testid="stSidebar"] [role="radiogroup"] * {{color:{TEXT};}}
 [data-baseweb="popover"] {{background:{SURFACE};color:{TEXT};}}
 [data-baseweb="popover"] li {{background:{SURFACE};color:{TEXT};}}
+.stApp a {{color:{ACCENT};text-decoration:underline;text-underline-offset:2px;}}
+.stApp :is(a, button, input, [role="radio"], [role="combobox"]):focus-visible {{outline:3px solid #FFDD00;outline-offset:2px;}}
 </style>
 """, unsafe_allow_html=True)
 
@@ -104,7 +106,7 @@ scope_label = f"{year} · {department} · {category}"
 st.title({"Executive dashboard": "Government major projects", "Departments": "Departmental analysis",
           "Project register": "Project risk register", "Data quality": "Source data quality",
           "Methodology": "Methodology and interpretation"}[view])
-st.caption("UK Government Major Projects Portfolio · source: NISTA annual project data")
+st.caption("Independent analysis of UK Government Major Projects Portfolio data · source: NISTA annual project data")
 st.markdown(f'<div class="scope">{scope_label}</div>', unsafe_allow_html=True)
 
 if view == "Executive dashboard":
@@ -152,7 +154,7 @@ elif view == "Departments":
         if not scored.empty:
             bar(scored, "mean_score", "department", "Average analytical score among rated projects",
                 height=max(420, min(660, 130 + 32 * len(scored))), format=".1f", maximum=100,
-                color="#77ACDB" if dark_mode else "#416383")
+                color="#8EB8DC" if dark_mode else "#1D70B8")
         st.caption("Average scores exclude unrated projects. Compare rated counts before interpreting a department average.")
         st.dataframe(summary.rename(columns={"projects": "Projects", "cost_m": "Cost £m", "rated": "Rated", "mean_score": "Average score", "critical": "Critical"}),
                      width="stretch", hide_index=True)
@@ -186,7 +188,7 @@ elif view == "Data quality":
         melted = quality.melt(id_vars="year", value_vars=["missing_cost", "missing_duration", "unrated"], var_name="Field", value_name="Projects")
         melted["Field"] = melted["Field"].map({"missing_cost": "Cost missing", "missing_duration": "Duration missing", "unrated": "IPA rating missing / exempt"})
         fig = px.bar(melted, x="Projects", y="Field", color="year", barmode="group", orientation="h",
-                     color_discrete_map={"2024-25": ACCENT, "2025-26": "#77ACDB" if dark_mode else "#416383"})
+                     color_discrete_map={"2024-25": ACCENT, "2025-26": "#CFE4DC" if dark_mode else "#0F7A52"})
         fig.update_layout(title="Unavailable fields by reporting year", legend_title=None,
                           legend={"orientation": "h", "y": -0.25, "x": 0})
         fig.update_yaxes(title=None, showgrid=False)
