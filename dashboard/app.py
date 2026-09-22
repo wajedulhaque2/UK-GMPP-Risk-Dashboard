@@ -24,7 +24,7 @@ def load() -> pd.DataFrame:
 
 def chart(fig: go.Figure, height: int = 420, bottom: int = 48) -> None:
     fig.update_layout(
-        template="plotly_dark" if dark_mode else "plotly_white", height=height,
+        template="plotly_white", height=height,
         font={"family": "Arial, Helvetica, sans-serif", "color": TEXT, "size": 13},
         title={"x": 0.02, "xanchor": "left", "font": {"size": 20, "family": "Arial, Helvetica, sans-serif"}},
         margin={"l": 24, "r": 56, "t": 65, "b": bottom},
@@ -52,33 +52,36 @@ def bar(frame: pd.DataFrame, x: str, y: str, title: str, *, height: int = 460,
 
 st.set_page_config(page_title="UK major projects | portfolio risk", page_icon="📊", layout="wide")
 st.sidebar.title("UK major projects")
-dark_mode = st.sidebar.toggle("Dark mode", value=False, key="dark_mode")
 BACKGROUND, SURFACE, TEXT, MUTED, BORDER, GRID, ACCENT = (
-    ("#171A1C", "#24292C", "#FFFFFF", "#CED5D9", "#596269", "#434B50", "#8EB8DC")
-    if dark_mode else
-    ("#FFFFFF", "#FFFFFF", "#0B0C0C", "#484949", "#CECECE", "#E5E5E5", GOV_BLUE)
+    "#FFFFFF", "#FFFFFF", "#0B0C0C", "#484949", "#CECECE", "#E5E5E5", GOV_BLUE
 )
 st.markdown(f"""
 <style>
-.stApp {{background:{BACKGROUND};color:{TEXT};font-family:Arial,Helvetica,sans-serif;border-top:9px solid {'#0B0C0C' if not dark_mode else '#000000'};}}
+.stApp {{background:{BACKGROUND};color:{TEXT};font-family:Arial,Helvetica,sans-serif;border-top:9px solid {GOV_BLUE};}}
 .block-container {{max-width:1380px;padding-top:2rem;}}
-[data-testid="stSidebar"] {{background:{'#F3F3F3' if not dark_mode else '#24292C'};border-right:1px solid {BORDER};color:{TEXT};}}
+[data-testid="stSidebar"] {{background:{GOV_BLUE};border-right:1px solid #16548A;color:#FFFFFF;}}
 .stApp h1, .stApp h2, .stApp h3, .stApp p, .stApp label,
-[data-testid="stSidebar"] h1, [data-testid="stSidebar"] p, [data-testid="stSidebar"] label {{color:{TEXT};}}
-.stApp [data-testid="stCaptionContainer"] p, [data-testid="stSidebar"] [data-testid="stCaptionContainer"] p {{color:{MUTED};}}
+.stApp [data-testid="stCaptionContainer"] p {{color:{MUTED};}}
 .stApp h1, .stApp h2, .stApp h3 {{font-family:Arial,Helvetica,sans-serif;letter-spacing:-.025em;font-weight:700;}}
 .stApp h1 {{border-bottom:5px solid {ACCENT};padding-bottom:.55rem;}}
-[data-testid="stSidebar"] h1 {{font-size:1.55rem;border-bottom:4px solid {ACCENT};padding-bottom:.6rem;}}
+[data-testid="stSidebar"] h1 {{font-size:1.55rem;border-bottom:4px solid #FFFFFF;padding-bottom:.6rem;}}
+[data-testid="stSidebar"] h1, [data-testid="stSidebar"] p,
+[data-testid="stSidebar"] label, [data-testid="stSidebar"] [role="radiogroup"] * {{color:#FFFFFF !important;}}
+[data-testid="stSidebar"] [data-testid="stCaptionContainer"] p {{color:#E3F0FA !important;}}
+[data-testid="stSidebar"] [role="radiogroup"] {{background:transparent;border:0;}}
+[data-testid="stSidebar"] hr {{border-color:#8EB8DC;}}
+[data-testid="stSidebar"] [data-baseweb="select"] > div {{background:#FFFFFF;border:2px solid #0B0C0C;border-radius:0;}}
+[data-testid="stSidebar"] [data-baseweb="select"] * {{color:#0B0C0C !important;}}
+[data-testid="stSidebar"] [data-baseweb="select"] svg {{fill:#0B0C0C;}}
 [data-testid="stMetric"], [data-testid="stPlotlyChart"], [data-testid="stDataFrame"] {{background:{SURFACE};border:0;border-bottom:1px solid {BORDER};border-radius:0;}}
 [data-testid="stMetric"] {{padding:1rem .65rem 1.1rem;min-height:115px;border-top:4px solid {ACCENT};}}
 [data-testid="stMetric"] label, [data-testid="stMetricValue"] {{color:{TEXT};}}
 [data-testid="stPlotlyChart"], [data-testid="stDataFrame"] {{padding:.4rem 0 1rem;}}
 [data-testid="stHeader"] {{background:{BACKGROUND};}}
 [data-testid="stAlert"] {{color:{TEXT};}}
-.scope {{background:{'#2C363E' if dark_mode else '#F4F8FB'};border-left:5px solid {ACCENT};padding:1rem 1.2rem;margin:.5rem 0 1.5rem;color:{TEXT};}}
-[data-baseweb="select"] > div, [data-testid="stSidebar"] [role="radiogroup"],
-[data-baseweb="input"] > div {{background:{SURFACE};color:{TEXT};border-color:{BORDER};}}
-[data-baseweb="select"] *, [data-baseweb="input"] input, [data-testid="stSidebar"] [role="radiogroup"] * {{color:{TEXT};}}
+.scope {{background:#F4F8FB;border-left:5px solid {ACCENT};padding:1rem 1.2rem;margin:.5rem 0 1.5rem;color:{TEXT};}}
+[data-baseweb="select"] > div, [data-baseweb="input"] > div {{background:{SURFACE};color:{TEXT};border-color:{BORDER};}}
+[data-baseweb="select"] *, [data-baseweb="input"] input {{color:{TEXT};}}
 [data-baseweb="popover"] {{background:{SURFACE};color:{TEXT};}}
 [data-baseweb="popover"] li {{background:{SURFACE};color:{TEXT};}}
 .stApp a {{color:{ACCENT};text-decoration:underline;text-underline-offset:2px;}}
@@ -154,7 +157,7 @@ elif view == "Departments":
         if not scored.empty:
             bar(scored, "mean_score", "department", "Average analytical score among rated projects",
                 height=max(420, min(660, 130 + 32 * len(scored))), format=".1f", maximum=100,
-                color="#8EB8DC" if dark_mode else "#1D70B8")
+                color=GOV_BLUE)
         st.caption("Average scores exclude unrated projects. Compare rated counts before interpreting a department average.")
         st.dataframe(summary.rename(columns={"projects": "Projects", "cost_m": "Cost £m", "rated": "Rated", "mean_score": "Average score", "critical": "Critical"}),
                      width="stretch", hide_index=True)
@@ -188,7 +191,7 @@ elif view == "Data quality":
         melted = quality.melt(id_vars="year", value_vars=["missing_cost", "missing_duration", "unrated"], var_name="Field", value_name="Projects")
         melted["Field"] = melted["Field"].map({"missing_cost": "Cost missing", "missing_duration": "Duration missing", "unrated": "IPA rating missing / exempt"})
         fig = px.bar(melted, x="Projects", y="Field", color="year", barmode="group", orientation="h",
-                     color_discrete_map={"2024-25": ACCENT, "2025-26": "#CFE4DC" if dark_mode else "#0F7A52"})
+                     color_discrete_map={"2024-25": ACCENT, "2025-26": "#0F7A52"})
         fig.update_layout(title="Unavailable fields by reporting year", legend_title=None,
                           legend={"orientation": "h", "y": -0.25, "x": 0})
         fig.update_yaxes(title=None, showgrid=False)
