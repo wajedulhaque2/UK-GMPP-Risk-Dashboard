@@ -11,8 +11,8 @@ import streamlit as st
 
 
 ROOT = Path(__file__).resolve().parent
-NAVY = "#16324A"
-TEAL = "#147D83"
+NAVY = "#1A2F45"
+TEAL = "#986635"
 RATING_COLORS = {"RED": "#B91C1C", "AMBER": "#E9A800", "GREEN": "#087F3E", "Unrated": "#9AA9B5"}
 ROW_COLORS = {"RED": ("#B91C1C", "#FFFFFF"), "AMBER": ("#E9A800", "#171717"),
               "GREEN": ("#087F3E", "#FFFFFF")}
@@ -26,8 +26,8 @@ def load() -> pd.DataFrame:
 def chart(fig: go.Figure, height: int = 420, bottom: int = 48) -> None:
     fig.update_layout(
         template="plotly_dark" if dark_mode else "plotly_white", height=height,
-        font={"family": "Arial", "color": TEXT, "size": 12},
-        title={"x": 0.02, "xanchor": "left", "font": {"size": 18}},
+        font={"family": "Aptos, Arial", "color": TEXT, "size": 12},
+        title={"x": 0.02, "xanchor": "left", "font": {"size": 18, "family": "Arial Narrow, Arial"}},
         margin={"l": 24, "r": 56, "t": 65, "b": bottom},
         paper_bgcolor=SURFACE, plot_bgcolor=SURFACE, bargap=0.3,
         hoverlabel={"font": {"family": "Arial"}},
@@ -55,24 +55,27 @@ st.set_page_config(page_title="UK major projects | portfolio risk", page_icon="ð
 st.sidebar.title("UK major projects")
 dark_mode = st.sidebar.toggle("Dark mode", value=False, key="dark_mode")
 BACKGROUND, SURFACE, TEXT, MUTED, BORDER, GRID, ACCENT = (
-    ("#101B27", "#192938", "#F4F7FA", "#B6C8D6", "#35495B", "#314557", "#3CBEC2")
+    ("#111D2B", "#203248", "#F4F2EC", "#BDC7CF", "#43566A", "#35485A", "#D2A164")
     if dark_mode else
-    ("#F5F8FA", "#FFFFFF", "#16324A", "#52697A", "#DCE6EA", "#E5EBEF", TEAL)
+    ("#F4F1E9", "#FFFEFA", "#1A2F45", "#566A79", "#DAD9D0", "#E8E6DF", TEAL)
 )
 st.markdown(f"""
 <style>
-.stApp {{background:{BACKGROUND};color:{TEXT};}}
+.stApp {{background:{BACKGROUND};color:{TEXT};font-family:Aptos,Arial,sans-serif;}}
 [data-testid="stSidebar"] {{background:{SURFACE};border-right:1px solid {BORDER};color:{TEXT};}}
 .stApp h1, .stApp h2, .stApp h3, .stApp p, .stApp label,
 [data-testid="stSidebar"] h1, [data-testid="stSidebar"] p, [data-testid="stSidebar"] label {{color:{TEXT};}}
 .stApp [data-testid="stCaptionContainer"] p, [data-testid="stSidebar"] [data-testid="stCaptionContainer"] p {{color:{MUTED};}}
+.stApp h1, .stApp h2, .stApp h3 {{font-family:'Arial Narrow',Arial,sans-serif;text-transform:uppercase;letter-spacing:.035em;}}
+[data-testid="stSidebar"] {{border-right:4px solid {ACCENT};}}
+[data-testid="stSidebar"] h1 {{font-family:'Arial Narrow',Arial,sans-serif;text-transform:uppercase;letter-spacing:.05em;}}
 [data-testid="stMetric"], [data-testid="stPlotlyChart"], [data-testid="stDataFrame"] {{background:{SURFACE};border:1px solid {BORDER};border-radius:9px;}}
-[data-testid="stMetric"] {{padding:0.85rem 1rem;min-height:115px;}}
+[data-testid="stMetric"] {{padding:0.85rem 1rem;min-height:115px;border-radius:3px;border-top:4px solid {ACCENT};}}
 [data-testid="stMetric"] label, [data-testid="stMetricValue"] {{color:{TEXT};}}
-[data-testid="stPlotlyChart"], [data-testid="stDataFrame"] {{padding:0.35rem;}}
+[data-testid="stPlotlyChart"], [data-testid="stDataFrame"] {{padding:0.35rem;border-radius:3px;}}
 [data-testid="stHeader"] {{background:{BACKGROUND};}}
 [data-testid="stAlert"] {{color:{TEXT};}}
-.scope {{background:{'#213B47' if dark_mode else '#E7F2F2'};border-left:4px solid {ACCENT};padding:0.75rem 1rem;margin:0.5rem 0 1.2rem;color:{TEXT};}}
+.scope {{background:{'#2D3C4A' if dark_mode else '#EEE8DA'};border-left:5px solid {ACCENT};padding:0.75rem 1rem;margin:0.5rem 0 1.2rem;color:{TEXT};}}
 [data-baseweb="select"] > div, [data-testid="stSidebar"] [role="radiogroup"],
 [data-baseweb="input"] > div {{background:{SURFACE};color:{TEXT};border-color:{BORDER};}}
 [data-baseweb="select"] *, [data-baseweb="input"] input, [data-testid="stSidebar"] [role="radiogroup"] * {{color:{TEXT};}}
@@ -113,13 +116,25 @@ if view == "Executive dashboard":
     st.caption("Whole-life cost sums only reported numeric values. Year totals count project-year records; projects appearing in both years are counted twice.")
 
     rating = scope.groupby(["year", "rating_label"]).size().reset_index(name="Projects")
-    fig = px.bar(rating, x="year", y="Projects", color="rating_label", barmode="stack",
-                 category_orders={"year": ["2024-25", "2025-26"], "rating_label": ["RED", "AMBER", "GREEN", "Unrated"]},
-                 color_discrete_map=RATING_COLORS)
-    fig.update_layout(title="Published delivery-confidence availability", legend_title=None,
-                      legend={"orientation": "h", "y": -0.25, "x": 0})
-    fig.update_xaxes(title=None, type="category")
-    chart(fig, 420, 95)
+    risk_counts = scope.risk_tier.value_counts().reindex(["Critical", "High", "Medium", "Low", "Not scored"], fill_value=0)
+    mix, tiers = st.columns(2)
+    with mix:
+        fig = px.bar(rating, x="year", y="Projects", color="rating_label", barmode="stack",
+                     category_orders={"year": ["2024-25", "2025-26"], "rating_label": ["RED", "AMBER", "GREEN", "Unrated"]},
+                     color_discrete_map=RATING_COLORS)
+        fig.update_layout(title="Published delivery ratings", legend_title=None,
+                          legend={"orientation": "h", "y": -0.25, "x": 0})
+        fig.update_xaxes(title=None, type="category")
+        chart(fig, 400, 95)
+    with tiers:
+        tier_frame = risk_counts.rename_axis("Tier").reset_index(name="Projects")
+        fig = px.bar(tier_frame, x="Tier", y="Projects", color="Tier",
+                     color_discrete_map={"Critical": "#B91C1C", "High": "#C76622", "Medium": "#D7A225",
+                                         "Low": "#087F3E", "Not scored": "#8394A1"}, text="Projects")
+        fig.update_traces(textposition="outside", cliponaxis=False)
+        fig.update_layout(title="Analytical risk tiers", showlegend=False)
+        fig.update_xaxes(title=None)
+        chart(fig, 400)
 
     by_department = scope.groupby("department", dropna=False).agg(cost_m=("cost_m", "sum"), projects=("project", "size")).reset_index()
     if len(by_department):
